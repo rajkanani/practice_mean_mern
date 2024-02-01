@@ -27,6 +27,30 @@ class Customer {
         })
     } 
 
+    get_task_board = () => {
+        return async (req, res, next) => {
+            try {
+                const {_id} = req.body.auth;
+                const { name } = req.body;
+
+                const boards = await taskBoard.aggregate([{
+                    $match: {
+                        user_id: new mongoose.Types.ObjectId(_id),
+                    }
+                }]);
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Task board get successfully`,
+                    data: boards
+                });
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
     create_task_board = () => {
         return async (req, res, next) => {
             try {
@@ -52,9 +76,9 @@ class Customer {
         return async (req, res, next) => {
             try {
                 const {_id} = req.body.auth;
-                const { name, description } = req.body;
+                const { name, description, task_board_id } = req.body;
 
-                let data = {name, description, user_id: _id}
+                let data = {name, description, user_id: _id, task_board_id}
                 var  board = await task.create(data);
 
                 return res.status(200).json({
@@ -63,6 +87,30 @@ class Customer {
                     data: board
                 });
             } catch (err) {
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
+    get_task = () => {
+        return async (req, res, next) => {
+            try {
+                const {_id} = req.body.auth;
+                const { name } = req.body;
+
+                const boards = await task.aggregate([{
+                    $match: {
+                        user_id: new mongoose.Types.ObjectId(_id),
+                    }
+                }]);
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Task get successfully`,
+                    data: boards
+                });
+            } catch (err) {
+                console.log(err);
                 return error.sendBadRequest(res, "Something went wrong");
             }
         };

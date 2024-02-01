@@ -23,11 +23,19 @@ routes.post('/create-task-board', [
     check('description').optional()
 ],  asyncHandler(taskController.create_task_board()));
 
+routes.post('/get-task-board', [
+    jwtVerify,
+],  asyncHandler(taskController.get_task_board()));
+
 routes.post('/create-task', [
     jwtVerify,
     check('name').notEmpty().withMessage('Email is required').trim().toLowerCase(),
     check('description').optional()
 ],  asyncHandler(taskController.create_task()));
+
+routes.post('/get-task', [
+    jwtVerify,
+],  asyncHandler(taskController.get_task()));
 
 
 module.exports = routes;
