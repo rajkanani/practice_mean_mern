@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const config = require("./../../../config");
 var mongoose = require("mongoose");
 var user = mongoose.model("user");
-// const query = require("./../../../db/mysql.master");
 const error = require("./../../../helpers/error");
 const { jwtSign } = require("../../../helpers/jwt");
 
@@ -28,9 +27,6 @@ class Customer {
                     success: true,
                     message: `Registered successfully`
                 });
-
-                // if (user.length) return error.sendBadRequest(res, "Your email is already registered with us.");
-                // return error.sendBadRequest(res, "Registered failed"); 
             } catch (err) {
                 return error.sendBadRequest(res, "Something went wrong");
             }
@@ -57,18 +53,57 @@ class Customer {
                 if (!result2) {
                     return error.sendBadRequest(res, "wrong password");
                 }
-                
-                console.log(user_select, "---------user_select");
 
-                // let payload = JSON.parse(JSON.stringify(user[0]))
-                // let token = await jwtSign(payload, 365656);
+                let token = await jwtSign(JSON.parse(JSON.stringify(user_select)), 365656);
 
-                // return res.status(200).json({
-                //     success: true,
-                //     message: `Login successfully`,
-                //     token
-                // });
+                return res.status(200).json({
+                    success: true,
+                    message: `Login successfully`,
+                    token
+                });
 
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
+    forgot_password = () => {
+        return async (req, res, next) => {
+            try {
+                const { email, password, otp } = req.body;
+                if (email && otp) {
+                    const findUser = await user.findOne({ email: email });
+                    if (findUser.otpExpiry < new Date()){
+                        return res.status(201).json({success: true, message: `OTP expired`});
+                    }
+                    if (findUser.otp == otp){
+                        let new_pass = await bcrypt.hashSync(password);
+                        const result = await user.findOneAndUpdate({ email: email },{password: new_pass});
+                        return res.status(200).json({success: true, message: "OTP verified successfully, password updated successfully", findUser});
+                    }
+                    else return res.status(201).json({success: true, message: `wrong OTP`});
+                } else {
+
+                    var val = Math.floor(1000 + Math.random() * 9000);
+                    const findUser = await user.findOne({ email: email });
+                    if (!findUser) return error.sendBadRequest(res, "Account does not exist!");
+                    
+                    findUser.otp = val;
+                    var d = new Date();
+                    d.setMinutes(d.getMinutes() + 15);
+                    findUser.otpExpiry = d;
+                    var subject = "Forgot Password";
+                    var html = "";
+                    html += `<h1>Forgot Password</h1>`;
+                    html += `<br>One Time Password(OTP) to reset the password: ${val}, It will be valid for 15 minutes only`;
+                    // var check = await helper.email_sendgrid("", email, subject, html);
+
+                    await findUser.save({ validateBeforeSave: false }).then();
+                    return res.status(200).json({success: true, message: "Please check your email for the OTP, Expires in 15 minutes", otp: val});
+                    
+                }
             } catch (err) {
                 console.log(err);
                 return error.sendBadRequest(res, "Something went wrong");

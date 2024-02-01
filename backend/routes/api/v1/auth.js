@@ -23,10 +23,14 @@ routes.post('/register', [
     check('name').optional()
 ],  asyncHandler(authController.register()));
 
-// curl --location 'localhost:3001/api/v1/login' --header 'Content-Type: application/json' --data-raw '{"email": "admin@gmail.com","password": "admin123"}'
+
 routes.post('/login', [
     check('email').notEmpty().withMessage('Email is required').trim().isEmail().withMessage('Invalid email Address').toLowerCase(),
     check('password').notEmpty().withMessage('password is required').isLength({min:8}).withMessage('password must be 8 characters')
 ],  asyncHandler(authController.login()));
+
+routes.post('/forgot-password', [
+    check('email').notEmpty().withMessage('Email is required').trim().isEmail().withMessage('Invalid email Address').toLowerCase()
+],  asyncHandler(authController.forgot_password()));
 
 module.exports = routes;

@@ -5,18 +5,18 @@
  * 
  * @author Raj Kanani
 **/
-const jwtoken 					= require("jsonwebtoken");
+const jwtoken = require("jsonwebtoken");
 
 // import helpers
-const error                     = require('./error');
-const config                    = require('./../config');
+const error = require('./error');
+const config = require('./../config');
 
 
 
 class JWT{
     constructor(){
-        this.secret         = config.key.secret;
-        this.algorithm      = "HS256";
+        this.secret = config.key.secret;
+        this.algorithm = "HS256";
     }
 
     verify = (req, res, next) =>  {
@@ -60,6 +60,8 @@ class JWT{
     }
     
     sign = async (payload, expiresIn) => {
+        console.log(payload, "-----");
+
         return jwtoken.sign(payload, this.secret, { expiresIn: expiresIn }, { algorithm: this.algorithm });
     }
     
