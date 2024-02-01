@@ -155,6 +155,25 @@ class Customer {
         };
     };
 
+    update_task = () => {
+        return async (req, res, next) => {
+            try {
+                const {_id} = req.body.auth;
+                const { task_id, new_task_board_id } = req.body;
+
+                const tasks = await task.updateOne({ _id: task_id, user_id: _id }, {task_board_id: new_task_board_id});
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Task updated successfully`
+                });
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
 }
 
 module.exports = new Customer();

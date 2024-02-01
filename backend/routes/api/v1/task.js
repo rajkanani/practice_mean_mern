@@ -48,5 +48,11 @@ routes.post('/delete-task', [
     check('task_id').notEmpty().withMessage('task_id is required'),
 ],  asyncHandler(taskController.delete_task()));
 
+routes.post('/update-task', [
+    jwtVerify,
+    check('task_id').notEmpty().withMessage('task_id is required'),
+    check('new_task_board_id').notEmpty().withMessage('new_task_board_id is required')
+],  asyncHandler(taskController.update_task()));
+
 
 module.exports = routes;
