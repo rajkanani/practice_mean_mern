@@ -111,6 +111,25 @@ class Customer {
         };
     };
 
+    reset_password = () => {
+        return async (req, res, next) => {
+            try {
+                const { email, password, old_password } = req.body;
+                const findUser = await user.findOne({ email: email });
+
+                var result2 = await bcrypt.compareSync(old_password, findUser.password);
+                if (!result2) return error.sendBadRequest(res, "wrong old password");
+
+                let new_pass = await bcrypt.hashSync(password);
+                const result = await user.findOneAndUpdate({ email: email },{password: new_pass});
+                return res.status(200).json({success: true, message: "Password reset successfully"});
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
 }
 
 module.exports = new Customer();

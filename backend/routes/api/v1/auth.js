@@ -33,4 +33,10 @@ routes.post('/forgot-password', [
     check('email').notEmpty().withMessage('Email is required').trim().isEmail().withMessage('Invalid email Address').toLowerCase()
 ],  asyncHandler(authController.forgot_password()));
 
+routes.post('/reset-password', [
+    check('email').notEmpty().withMessage('Email is required').trim().isEmail().withMessage('Invalid email Address').toLowerCase(),
+    check('password').notEmpty().withMessage('password is required').isLength({min:8}).withMessage('password must be 8 characters'),
+    check('old_password').notEmpty().withMessage('old password is required').isLength({min:8}).withMessage('old password must be 8 characters')
+],  asyncHandler(authController.reset_password()));
+
 module.exports = routes;
