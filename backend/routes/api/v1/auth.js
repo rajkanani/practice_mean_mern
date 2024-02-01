@@ -39,4 +39,9 @@ routes.post('/reset-password', [
     check('old_password').notEmpty().withMessage('old password is required').isLength({min:8}).withMessage('old password must be 8 characters')
 ],  asyncHandler(authController.reset_password()));
 
+routes.post('/update-profile', [
+    jwtVerify,
+    check('name').notEmpty().withMessage('name is required').trim().toLowerCase()
+],  asyncHandler(authController.update_profile()));
+
 module.exports = routes;

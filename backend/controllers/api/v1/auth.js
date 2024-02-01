@@ -4,11 +4,26 @@ const bcrypt = require("bcryptjs");
 const config = require("./../../../config");
 var mongoose = require("mongoose");
 var user = mongoose.model("user");
+const path = require('path');
 const error = require("./../../../helpers/error");
 const { jwtSign } = require("../../../helpers/jwt");
 
 class Customer {
     constructor() { }
+
+    file_upload = async (element) => {
+        return new Promise((resolve, reject) => {
+            element.mv(path.join(__dirname, '../../../public/images', `${element.md5}-${element.name}`),function(err) {
+                if(err){
+                    console.log(err);
+                    resolve()
+                }else{
+                    console.log("uploaded");
+                    resolve(`${element.md5}-${element.name}`)
+                } 
+            })
+        })
+    } 
 
     register = () => {
         return async (req, res, next) => {
@@ -32,7 +47,6 @@ class Customer {
             }
         };
     };
-
 
     login = () => {
         return async (req, res, next) => {
@@ -122,6 +136,35 @@ class Customer {
 
                 let new_pass = await bcrypt.hashSync(password);
                 const result = await user.findOneAndUpdate({ email: email },{password: new_pass});
+                return res.status(200).json({success: true, message: "Password reset successfully"});
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
+    update_profile = () => {
+        return async (req, res, next) => {
+            try {
+                const { name } = req.body;
+                const { email } = req.body.auth;
+
+                let files_name = [];
+                if (req.files) {
+                    if (req.files.file.length) {
+                        for (let i = 0; i < req.files.file.length; i++) {
+                            const element = req.files.file[i];
+                            let file = await this.file_upload(element);
+                            files_name.push(file)
+                        }
+                    } else {
+                        let file = await this.file_upload(req.files.file);
+                        files_name.push(file)
+                    }
+                }
+
+                const result = await user.findOneAndUpdate({ email: email },{name: name, image: files_name.toString()});
                 return res.status(200).json({success: true, message: "Password reset successfully"});
             } catch (err) {
                 console.log(err);

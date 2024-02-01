@@ -20,6 +20,9 @@ var userModle = new Schema(
 			type: String,
 			required: "name is required",
 		},
+		image: {
+			type: String
+		},
 		status: {
 			type: Number,
 			default: 1,
