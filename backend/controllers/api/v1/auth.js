@@ -8,7 +8,7 @@ const path = require('path');
 const error = require("./../../../helpers/error");
 const { jwtSign } = require("../../../helpers/jwt");
 
-class Customer {
+class User {
     constructor() { }
 
     file_upload = async (element) => {
@@ -175,4 +175,4 @@ class Customer {
 
 }
 
-module.exports = new Customer();
+module.exports = new User();

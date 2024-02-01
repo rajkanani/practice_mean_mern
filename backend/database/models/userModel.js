@@ -2,7 +2,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var userModle = new Schema(
+var userModel = new Schema(
 	{
 		email: {
 			type: String,
@@ -42,5 +42,5 @@ var userModle = new Schema(
 	},
 	{ timestamps: true }
 );
-userModle.index({ email: 1 }, { unique: true });
-module.exports = mongoose.model("user", userModle);
+userModel.index({ email: 1 }, { unique: true });
+module.exports = mongoose.model("user", userModel);
