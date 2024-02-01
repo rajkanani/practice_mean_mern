@@ -51,6 +51,26 @@ class Customer {
         };
     };
 
+    delete_task_board = () => {
+        return async (req, res, next) => {
+            try {
+                const {_id} = req.body.auth;
+                const { task_board_id } = req.body;
+
+                const boards = await taskBoard.deleteOne({ _id: task_board_id, user_id: _id });
+                const tasks = await task.deleteMany({ task_board_id: task_board_id, user_id: _id });
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Task board deleted successfully`
+                });
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
     create_task_board = () => {
         return async (req, res, next) => {
             try {
@@ -108,6 +128,25 @@ class Customer {
                     success: true,
                     message: `Task get successfully`,
                     data: boards
+                });
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
+    delete_task = () => {
+        return async (req, res, next) => {
+            try {
+                const {_id} = req.body.auth;
+                const { task_id } = req.body;
+
+                const tasks = await task.deleteOne({ _id: task_id, user_id: _id });
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Task deleted successfully`
                 });
             } catch (err) {
                 console.log(err);

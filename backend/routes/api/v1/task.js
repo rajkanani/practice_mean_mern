@@ -27,15 +27,26 @@ routes.post('/get-task-board', [
     jwtVerify,
 ],  asyncHandler(taskController.get_task_board()));
 
+routes.post('/delete-task-board', [
+    jwtVerify,
+    check('task_board_id').notEmpty().withMessage('task_board_id is required'),
+],  asyncHandler(taskController.delete_task_board()));
+
 routes.post('/create-task', [
     jwtVerify,
-    check('name').notEmpty().withMessage('Email is required').trim().toLowerCase(),
+    check('name').notEmpty().withMessage('name is required').trim().toLowerCase(),
+    check('task_board_id').notEmpty().withMessage('task_board_id is required'),
     check('description').optional()
 ],  asyncHandler(taskController.create_task()));
 
 routes.post('/get-task', [
     jwtVerify,
 ],  asyncHandler(taskController.get_task()));
+
+routes.post('/delete-task', [
+    jwtVerify,
+    check('task_id').notEmpty().withMessage('task_id is required'),
+],  asyncHandler(taskController.delete_task()));
 
 
 module.exports = routes;
