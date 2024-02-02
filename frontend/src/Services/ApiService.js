@@ -25,6 +25,7 @@ export async function GetApi(path) {
 }
 
 export function PostApi(path, body) {
+    console.log(path);
     const PostApiData = axios
         .post(path, body, {
             headers: {

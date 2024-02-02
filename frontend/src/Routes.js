@@ -4,9 +4,9 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 
 const Login = lazy(() => import("./pages/Login"));
 const TaskBoard = lazy(() => import("./pages/TaskBoard"));
-const CreateTicket = lazy(() => import("./pages/createTicket"));
+const CreateTicket = lazy(() => import("./pages/CreateTicket"));
 const Users = lazy(() => import("./pages/Users"));
-const ChangePassword = lazy(() => import("./pages/Changepassword"));
+const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));

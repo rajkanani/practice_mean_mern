@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function createTicket() {
+export default function CreateTicket() {
   return (
     <div>
-      createTicket
+      CreateTicket
     </div>
   )
 }

@@ -97,7 +97,7 @@ class User {
                         const result = await user.findOneAndUpdate({ email: email },{password: new_pass});
                         return res.status(200).json({success: true, message: "OTP verified successfully, password updated successfully", findUser});
                     }
-                    else return res.status(201).json({success: true, message: `wrong OTP`});
+                    else return error.sendBadRequest(res, "wrong OTP");
                 } else {
 
                     var val = Math.floor(1000 + Math.random() * 9000);

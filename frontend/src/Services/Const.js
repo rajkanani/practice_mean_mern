@@ -7,7 +7,8 @@ let api_url = {
 export const ApiBaseUrl = api_url[LIVE];
 
 export const API_PATH = {
-    login: ApiBaseUrl + 'api/v1/login'
+    login: ApiBaseUrl + 'api/v1/auth/login',
+    forgot_password: ApiBaseUrl + 'api/v1/auth/forgot-password',
 }
 
 export function timeAgo(dateString) {
