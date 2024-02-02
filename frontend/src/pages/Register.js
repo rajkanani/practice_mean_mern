@@ -6,44 +6,33 @@ import { ErrorMessage, Field, Formik } from "formik";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-export default function OtpPage() {
+
+export default function Register() {
 
     const navigate = useNavigate();
-    
-
     const [loading, setLoading] = useState(false);
-    const [email, setEmail] = useState('');
-    
 
-
-    /* useEffect(() => {
-        const query = new URLSearchParams(window.location.search);
-        const emails = query.get('email');
-        if (emails) setEmail(emails);
-    }); */
-    
 
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    const handleOTP = async (formData, resetForm) => {
+    const handleLogin = async (formData, resetForm) => {
         setLoading(true);
         const data = {
+            name: formData.name,
             email: formData.email,
-            otp: formData.otp,
             password: formData.password
         }
-        const users = await PostApi(API_PATH.forgot_password, data);
+        const users = await PostApi(API_PATH.register, data);
         if (users.status === 200) {
-            console.log(users);
+            navigate("/login");
             toast.success(users.data.message);
         }
         await delay(500);
         setLoading(false);
     };
-
 
     return (
         <div className="sign-in__wrapper">
@@ -53,21 +42,23 @@ export default function OtpPage() {
                     <Formik
                         initialValues={{
                             email: "",
-                            otp: "",
                             password: "",
                         }}
                         validationSchema={yup.object({
                             email: yup.string().email().required("Email is required"),
                             password: yup.string().required("Password is required"),
-                            OTP: yup.string().required("OTP is required")
                         })}
                         onSubmit={(formData, { resetForm }) => {
-                            handleOTP(formData, resetForm);
+                            handleLogin(formData, resetForm);
                         }}
                     >
                         {(runform) => (
                             <form className="shadow p-4 bg-white rounded col-sm-12 text-center" onSubmit={runform.handleSubmit}>
-                                <div className="h4 mb-2 text-center">Sign In</div>
+                                <div className="h4 mb-2 text-center">Sign Up</div>
+                                <label htmlFor="name" className='mb-2 text-center'>Name</label>
+                                <Field className="mb-2" name="name" id="name" type="text" placeholder="Please enter name" />
+                                <ErrorMessage className="mb-2" name="name" component="span" />
+                                
                                 <label htmlFor="email" className='mb-2 text-center'>Email</label>
                                 <Field className="mb-2" name="email" id="email" type="text" placeholder="Please enter email" />
                                 <ErrorMessage className="mb-2" name="email" component="span" />
@@ -75,23 +66,24 @@ export default function OtpPage() {
                                 <label htmlFor="password" className='mb-2 text-center'>Password</label>
                                 <Field className="mb-2" name="password" id="password" type="text" placeholder="Please enter password" />
                                 <ErrorMessage className="mb-2" name="password" component="span" />
-                                
-                                <label htmlFor="otp" className='mb-2 text-center'>OTP</label>
-                                <Field className="mb-2" name="otp" id="otp" type="text" placeholder="Please enter otp" />
-                                <ErrorMessage className="mb-2" name="otp" component="span" />
 
                                 {!loading ? (
                                     <button className="w-100" variant="primary" type="submit">
-                                        Send OTP
+                                        Sign Up
                                     </button>
-                                ) : (
+                                    ) : (
                                     <button className="w-100" variant="primary" type="submit" disabled>
-                                        Sending OTP...
+                                        Signing Up...
                                     </button>
                                 )}
-                                <div className="d-grid justify-content-end">
-                                    <Link to="/login" className="text-muted px-0">
+                                <div className="d-grid justify-content-start">
+                                    <Link to="/login"  className="text-muted px-0">
                                         Login
+                                    </Link>
+                                </div>
+                                <div className="d-grid justify-content-end">
+                                    <Link to="/forgot-password"  className="text-muted px-0">
+                                        Forgot password?
                                     </Link>
                                 </div>
                             </form>
@@ -100,5 +92,5 @@ export default function OtpPage() {
                 </div>
             </div>
         </div>
-    )
+    );
 }

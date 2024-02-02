@@ -8,7 +8,12 @@ export const ApiBaseUrl = api_url[LIVE];
 
 export const API_PATH = {
     login: ApiBaseUrl + 'api/v1/auth/login',
+    register: ApiBaseUrl + 'api/v1/auth/register',
     forgot_password: ApiBaseUrl + 'api/v1/auth/forgot-password',
+    get_task_board: ApiBaseUrl + 'api/v1/task/get-task-board',
+    get_task: ApiBaseUrl + 'api/v1/task/get-task',
+    create_task_board: ApiBaseUrl + 'api/v1/task/create-task-board',
+
 }
 
 export function timeAgo(dateString) {

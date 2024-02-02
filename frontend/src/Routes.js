@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 
 
 const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 const TaskBoard = lazy(() => import("./pages/TaskBoard"));
 const CreateTicket = lazy(() => import("./pages/CreateTicket"));
 const Users = lazy(() => import("./pages/Users"));
@@ -27,6 +28,7 @@ function MainRoutes(props) {
                 <Routes>
                     <Route path="/" strict element={<Login />} />
                     <Route path="/login" strict element={<Login />} />
+                    <Route path="/register" strict element={<Register />} />
                     <Route element={<Authorization />}>
                         <Route path="/task-board" strict element={<TaskBoard />} />
                         <Route path='/users' strict element={<Users />} />
