@@ -1,43 +1,38 @@
 import * as yup from "yup";
 import { toast } from 'react-toastify';
 import { API_PATH } from '../Services/Const';
-import { PostApi } from '../Services/ApiService';
+import { PostApi, PostApiFormdata } from '../Services/ApiService';
 import { ErrorMessage, Field, Formik } from "formik";
 import { Modal} from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
 
 
-const ModalForm = ({ showModal, handleClose }) => {
+const CreateTaskBoardModel = ({ showModal, handleClose, retain }) => {
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        // Add your form fields here
-        // Example:
-        // name: '',
-        // email: '',
-    });
+    const [file, setFile] = useState(null);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
     };
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    const handleCreateTask = async (formData, resetForm) => {
+    const handleUpdateProfile = async (formData, resetForm) => {
         setLoading(true);
-        const data = {
-            name: formData.name,
-            desctiption: ""
-        }
-        const users = await PostApi(API_PATH.create_task_board, data);
+        const FormDatas = new FormData();
+        FormDatas.append('file', file);
+        FormDatas.append('name', formData.name);
+        
+        const users = await PostApiFormdata(API_PATH.update_profile, FormDatas);
         if (users.status === 200) {
-            console.log(users, "-------------");
             toast.success(users.data.message);
         }
         await delay(500);
         setLoading(false);
+        retain();
         handleClose(); 
     };
 
@@ -58,23 +53,28 @@ const ModalForm = ({ showModal, handleClose }) => {
                                 name: yup.string().required("TaskBoard name is required"),
                             })}
                             onSubmit={(formData, { resetForm }) => {
-                                handleCreateTask(formData, resetForm);
+                                handleUpdateProfile(formData, resetForm);
                             }}
                         >
                             {(runform) => (
                                 <form className="shadow p-4 bg-white rounded row" onSubmit={runform.handleSubmit}>
                                     <div className="col-md-12 mb-3">
-                                        <label htmlFor="name" className='mb-2 d-block'>TaskBoard Name</label>
-                                        <Field className="mb-2 form-control" name="name" id="name" type="text" placeholder="Please enter taskboard name" />
+                                        <label htmlFor="name" className='mb-2 d-block'>Name</label>
+                                        <Field className="mb-2 form-control" name="name" id="name" type="text" placeholder="Please enter name" />
                                         <ErrorMessage className="mb-2 text-danger" name="name" component="span" />
+                                    </div>
+                                    <div className="col-md-12 mb-3">
+                                        <label htmlFor="image" className='mb-2 d-block'>Profile picture</label>
+                                        <Field className="mb-2 form-control" name="image" id="image" onChange={handleFileChange} type="file" accept="image/png, image/gif, image/jpeg"/>
+                                        <ErrorMessage className="mb-2 text-danger" name="image" component="span" />
                                     </div>
                                     {!loading ? (
                                         <button className="w-100 btn btn-primary" variant="primary" type="submit">
-                                            Create TaskBoard
+                                            Update Profile
                                         </button>
                                     ) : (
                                         <button className="w-100  btn btn-primary" variant="primary" type="submit" disabled="disabled">
-                                            Creating...
+                                            Updating Profile...
                                         </button>
                                     )}
                                 </form>
@@ -88,4 +88,4 @@ const ModalForm = ({ showModal, handleClose }) => {
   );
 };
 
-export default ModalForm;
+export default CreateTaskBoardModel;

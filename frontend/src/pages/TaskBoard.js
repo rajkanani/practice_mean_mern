@@ -1,13 +1,11 @@
-import * as yup from "yup";
 import { toast } from 'react-toastify';
 import styled from "@emotion/styled";
-import { Modal } from 'react-bootstrap';
-import ModalForm from '../components/ModalForm';
+import CreateTaskBoardModel from '../components/CreateTaskBoardModel';
+import CreateTaskModel from '../components/CreateTaskModel';
 import { columnsFromBackend } from "../components/KanbanData";
 import TaskCard from "../components/TaskCard";
 import { API_PATH, ApiBaseUrl } from '../Services/Const';
 import { PostApi } from '../Services/ApiService';
-import { ErrorMessage, Field, Formik } from "formik";
 import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -51,9 +49,18 @@ export default function TaskBoard(props) {
     const [profilePic, setprofilePic] = useState();
     const [profileName, setprofileName] = useState();
     const [showModal, setShowModal] = useState(false);
+    const [showModal1, setShowModal1] = useState(false);
+    const [taskBoardId, settaskBoardId] = useState("");
+    const [taskBoardName, settaskBoardName] = useState("");
 
     const handleShow = () => setShowModal(true);
     const handleClose = () => setShowModal(false);
+    const handleShow1 = (taskboardIds, taskboardnames) => {
+        settaskBoardId(taskboardIds)
+        settaskBoardName(taskboardnames)
+        setShowModal1(true)
+    };
+    const handleClose1 = () => setShowModal1(false);
 
 
     const getTaskBoard = async () => {
@@ -68,12 +75,7 @@ export default function TaskBoard(props) {
             toast.success(tskbord.data.message);
         }
     }
-    const CreateTaskBoard = async () => {
-        let tskbord = await PostApi(API_PATH.get_task_board);
-        if (tskbord.status === 200) {
-            toast.success(tskbord.data.message);
-        }
-    }
+    
 
     const getProfile = async () => {
         let profile = await localStorage.getItem('profile');
@@ -114,7 +116,6 @@ export default function TaskBoard(props) {
         navigate("/");
         toast.success("Logout");
     }
-
 
     const [columns, setColumns] = useState(columnsFromBackend);
 
@@ -199,9 +200,7 @@ export default function TaskBoard(props) {
             </div>
             {Object.entries(columns).length > 0 &&
 
-                <DragDropContext
-                    onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-                >
+                <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)} >
                     <Container>
                         <TaskColumnStyles>
                             {console.log(columns, "------columns")}
@@ -215,6 +214,9 @@ export default function TaskBoard(props) {
                                                 {...provided.droppableProps}
                                             >
                                                 <Title>{column.title}</Title>
+                                                <button type="button" class="btn btn-success" onClick={() => handleShow1('taskboardId', 'taskboardname')}>
+                                                    Add Task
+                                                </button>
                                                 {column.items.map((item, index) => (
                                                     <TaskCard key={index} item={item} index={index} />
                                                 ))}
@@ -228,7 +230,8 @@ export default function TaskBoard(props) {
                     </Container>
                 </DragDropContext>
             }
-            <ModalForm showModal={showModal} handleClose={handleClose} />
+            <CreateTaskBoardModel showModal={showModal} handleClose={handleClose} />
+            <CreateTaskModel showModal={showModal1} handleClose={handleClose1} taskBoardName={taskBoardName} taskBoardId={taskBoardId} />
         </>
 
     )

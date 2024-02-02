@@ -25,7 +25,7 @@ export async function GetApi(path) {
 }
 
 export function PostApi(path, body) {
-    console.log(path);
+    console.log(localStorage.getItem("token"));
     const PostApiData = axios
         .post(path, body, {
             headers: {

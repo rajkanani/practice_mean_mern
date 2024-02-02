@@ -129,7 +129,8 @@ class User {
     reset_password = () => {
         return async (req, res, next) => {
             try {
-                const { email, password, old_password } = req.body;
+                const { email } = req.body.auth;
+                const { password, old_password } = req.body;
                 const findUser = await user.findOne({ email: email });
 
                 var result2 = await bcrypt.compareSync(old_password, findUser.password);
@@ -165,8 +166,25 @@ class User {
                     }
                 }
 
+                console.log(files_name);
+
                 const result = await user.findOneAndUpdate({ email: email },{name: name, image: files_name.toString()});
-                return res.status(200).json({success: true, message: "Password reset successfully"});
+
+                const data = await user.findOne({ email: email });
+                return res.status(200).json({success: true, message: "Password reset successfully", data});
+            } catch (err) {
+                console.log(err);
+                return error.sendBadRequest(res, "Something went wrong");
+            }
+        };
+    };
+
+    get_profile = () => {
+        return async (req, res, next) => {
+            try {
+                const { email } = req.body.auth;
+                const findUser = await user.findOne({ email: email });
+                return res.status(200).json({success: true, message: "Profile details get successfully", data: findUser});
             } catch (err) {
                 console.log(err);
                 return error.sendBadRequest(res, "Something went wrong");

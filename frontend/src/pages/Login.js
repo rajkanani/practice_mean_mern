@@ -12,7 +12,12 @@ export default function Login(props) {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-
+    useEffect(()=> {
+        let token = localStorage.getItem('token')
+        if (token) {
+            navigate("/task-board");
+        }
+    })
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));

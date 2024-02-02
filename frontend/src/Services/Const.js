@@ -10,9 +10,13 @@ export const API_PATH = {
     login: ApiBaseUrl + 'api/v1/auth/login',
     register: ApiBaseUrl + 'api/v1/auth/register',
     forgot_password: ApiBaseUrl + 'api/v1/auth/forgot-password',
+    reset_password: ApiBaseUrl + 'api/v1/auth/reset-password',
+    get_profile: ApiBaseUrl + 'api/v1/auth/get-profile',
+    update_profile: ApiBaseUrl + 'api/v1/auth/update-profile',
     get_task_board: ApiBaseUrl + 'api/v1/task/get-task-board',
     get_task: ApiBaseUrl + 'api/v1/task/get-task',
     create_task_board: ApiBaseUrl + 'api/v1/task/create-task-board',
+    create_task: ApiBaseUrl + 'api/v1/task/create-task',
 
 }
 
