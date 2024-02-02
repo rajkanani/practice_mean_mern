@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { toast } from 'react-toastify';
-import { API_PATH } from '../services/Const';
-import { PostApi } from '../services/ApiService';
+import { API_PATH } from '../Services/Const';
+import { PostApi } from '../Services/ApiService';
 import { ErrorMessage, Field, Formik } from "formik";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -46,10 +46,9 @@ export default function OtpPage() {
 
 
     return (
-        <div className="sign-in__wrapper">
-            <div className="sign-in__backdrop"></div>
-            <div className="container-fluid">
-                <div className="row">
+        <div className="container-fluid h-100">
+            <div className="container-fluid h-100">
+                <div className="col-md-3 mx-auto">
                     <Formik
                         initialValues={{
                             email: "",
@@ -59,40 +58,55 @@ export default function OtpPage() {
                         validationSchema={yup.object({
                             email: yup.string().email().required("Email is required"),
                             password: yup.string().required("Password is required"),
-                            OTP: yup.string().required("OTP is required")
+                            otp: yup.string().required("OTP is required")
                         })}
                         onSubmit={(formData, { resetForm }) => {
                             handleOTP(formData, resetForm);
                         }}
                     >
                         {(runform) => (
-                            <form className="shadow p-4 bg-white rounded col-sm-12 text-center" onSubmit={runform.handleSubmit}>
-                                <div className="h4 mb-2 text-center">Sign In</div>
-                                <label htmlFor="email" className='mb-2 text-center'>Email</label>
-                                <Field className="mb-2" name="email" id="email" type="text" placeholder="Please enter email" />
-                                <ErrorMessage className="mb-2" name="email" component="span" />
-                                
-                                <label htmlFor="password" className='mb-2 text-center'>Password</label>
-                                <Field className="mb-2" name="password" id="password" type="text" placeholder="Please enter password" />
-                                <ErrorMessage className="mb-2" name="password" component="span" />
-                                
-                                <label htmlFor="otp" className='mb-2 text-center'>OTP</label>
-                                <Field className="mb-2" name="otp" id="otp" type="text" placeholder="Please enter otp" />
-                                <ErrorMessage className="mb-2" name="otp" component="span" />
+                            <form className="shadow p-4 bg-white rounded row" onSubmit={runform.handleSubmit}>
+                                <div className="h4 mb-2 text-center">
+                                    <h2 className="h4 mb-2 ">Verify OTP</h2>
+                                </div>
+                                <div className="col-md-12 mb-3">
+                                    <label htmlFor="email" className='mb-2 d-block'>Email</label>
+                                    <Field className="mb-2 form-control" name="email" id="email" type="text" placeholder="Please enter email" />
+                                    <ErrorMessage className="mb-2 text-danger" name="email" component="span" />
+                                </div>
 
+                                <div className="col-md-12 mb-3">
+                                    <label htmlFor="password" className='mb-2 d-block'>Password</label>
+                                    <Field className="mb-2 form-control" name="password" id="password" type="text" placeholder="Please enter password" />
+                                    <ErrorMessage className="mb-2 text-danger" name="password" component="span" />
+                                </div>
+
+                                <div className="col-md-12 mb-3">
+                                    <label htmlFor="otp" className='mb-2 d-block'>OTP</label>
+                                    <Field className="mb-2 form-control" name="otp" id="otp" type="text" placeholder="Please enter otp" />
+                                    <ErrorMessage className="mb-2 text-danger" name="otp" component="span" />
+                                </div>
                                 {!loading ? (
-                                    <button className="w-100" variant="primary" type="submit">
+                                    <button className="w-100 btn btn-primary" variant="primary" type="submit">
                                         Send OTP
                                     </button>
                                 ) : (
-                                    <button className="w-100" variant="primary" type="submit" disabled>
+                                    <button className="w-100 btn btn-primary" variant="primary" type="submit" disabled="disabled">
                                         Sending OTP...
                                     </button>
                                 )}
-                                <div className="d-grid justify-content-end">
-                                    <Link to="/login" className="text-muted px-0">
-                                        Login
-                                    </Link>
+                                <div className="col-12 mt-3">
+                                    <div className="d-flex">
+                                        <Link to="/register" className="text-muted px-0 ">
+                                            Sign Up
+                                        </Link>
+                                        <div className="d-grid justify-content-end ms-auto">
+                                            <Link to="/login" className="text-muted px-0">
+                                            Login
+                                            </Link>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </form>
                         )}

@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { toast } from 'react-toastify';
-import { API_PATH } from '../services/Const';
-import { PostApi } from '../services/ApiService';
+import { API_PATH } from '../Services/Const';
+import { PostApi } from '../Services/ApiService';
 import { ErrorMessage, Field, Formik } from "formik";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -28,6 +28,7 @@ export default function Login(props) {
         if (users.status === 200) {
             localStorage.removeItem("token")
             localStorage.setItem("token", 'Bearer ' + users.data.token);
+            localStorage.setItem("profile", JSON.stringify(users.data.data));
             navigate("/task-board");
             toast.success(users.data.message);
         }
@@ -37,7 +38,7 @@ export default function Login(props) {
 
     return (
         <div className="container-fluid h-100">
-            <div className="row h-100 align-items-center">
+            <div className="container-fluid h-100">
                 <div className="col-md-3 mx-auto">
                     <Formik
                         initialValues={{
@@ -75,14 +76,14 @@ export default function Login(props) {
                                         Log In
                                     </button>
                                 ) : (
-                                    <button className="w-100" variant="primary" type="submit" disabled>
+                                    <button className="w-100  btn btn-primary" variant="primary" type="submit" disabled="disabled">
                                         Logging In...
                                     </button>
                                 )}
                                 <div className="col-12 mt-3">
                                     <div className="d-flex">
                                         <Link to="/register" className="text-muted px-0 ">
-                                            Register
+                                            Sign Up
                                         </Link>
                                         <div className="d-grid justify-content-end ms-auto">
                                             <Link to="/forgot-password" className="text-muted px-0">

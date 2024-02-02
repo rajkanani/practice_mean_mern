@@ -1,10 +1,12 @@
 import * as yup from "yup";
 import { toast } from 'react-toastify';
 import styled from "@emotion/styled";
+import { Modal } from 'react-bootstrap';
+import ModalForm from '../components/ModalForm';
 import { columnsFromBackend } from "../components/KanbanData";
 import TaskCard from "../components/TaskCard";
-import { API_PATH } from '../services/Const';
-import { PostApi } from '../services/ApiService';
+import { API_PATH, ApiBaseUrl } from '../Services/Const';
+import { PostApi } from '../Services/ApiService';
 import { ErrorMessage, Field, Formik } from "formik";
 import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -46,6 +48,13 @@ export default function TaskBoard(props) {
 
     const navigate = useNavigate();
     const [taskBoard, settaskBoard] = useState();
+    const [profilePic, setprofilePic] = useState();
+    const [profileName, setprofileName] = useState();
+    const [showModal, setShowModal] = useState(false);
+
+    const handleShow = () => setShowModal(true);
+    const handleClose = () => setShowModal(false);
+
 
     const getTaskBoard = async () => {
         let tskbord = await PostApi(API_PATH.get_task_board);
@@ -66,13 +75,21 @@ export default function TaskBoard(props) {
         }
     }
 
+    const getProfile = async () => {
+        let profile = await localStorage.getItem('profile');
+        if(profile){
+            setprofileName(JSON.parse(profile).name)
+            setprofilePic(ApiBaseUrl + 'public/images/' + JSON.parse(profile).image)
+        }
+    }
+
     useEffect(() => {
         // getTaskBoard();
-        // getTask()
+        // getTask();
+        getProfile();
+        
+
     })
-
-
-
 
     const columns1 = {
         1: {
@@ -141,25 +158,44 @@ export default function TaskBoard(props) {
         <>
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-md-8">
-
+                    <div className="col-md-9">
                         <h3>
-                            Tickets
+                            TaskBoard
                         </h3>
                     </div>
-                    <div className="col-md-4 ">
+                    <div className="col-md-2">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="container text-center">
+                                    <img src={profilePic} alt="Profile Picture" class="img-fluid rounded-circle profile-button" data-bs-toggle="modal" data-bs-target="#profileModal" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <Link to="/edit-profile" className="text-muted px-0 ">
+                                    {profileName}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-1">
                         <div className="d-flex justify-content-end">
-                            <button onClick={() => Logout()} className="me-2">
+                            <button className="me-2 btn btn-danger" onClick={() => Logout()} >
                                 logout
-                            </button>
-                            <button onClick={() => CreateTaskBoard()}>
-                                Create TaskBoard
                             </button>
                         </div>
 
                     </div>
                 </div>
-
+            </div>
+            <div class="row">
+                <div className="col-md-10"></div>
+                <div className="col-md-2">
+                    <div className="d-flex justify-content-end">
+                        <button className="me-2 btn btn-primary" onClick={() => handleShow()}>
+                            Create TaskBoard
+                        </button>
+                    </div>
+                </div>
             </div>
             {Object.entries(columns).length > 0 &&
 
@@ -192,8 +228,7 @@ export default function TaskBoard(props) {
                     </Container>
                 </DragDropContext>
             }
-
-
+            <ModalForm showModal={showModal} handleClose={handleClose} />
         </>
 
     )

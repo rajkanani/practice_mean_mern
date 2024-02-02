@@ -73,7 +73,8 @@ class User {
                 return res.status(200).json({
                     success: true,
                     message: `Login successfully`,
-                    token
+                    token,
+                    data: user_select
                 });
 
             } catch (err) {
