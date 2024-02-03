@@ -7,7 +7,7 @@ import { Modal} from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
 
 
-const CreateTaskModel = ({ showModal, handleClose, taskBoardId }) => {
+const CreateTaskModel = ({ showModal, handleClose, taskBoardId, getNewTask }) => {
     const [loading, setLoading] = useState(false);
 
 
@@ -24,6 +24,7 @@ const CreateTaskModel = ({ showModal, handleClose, taskBoardId }) => {
         }
         const users = await PostApi(API_PATH.create_task, data);
         if (users.status === 200) {
+            getNewTask({id: users.data.data._id, Task: users.data.data.name, Due_Date: users.data.data.createdAt})
             toast.success(users.data.message);
         }
         await delay(500);

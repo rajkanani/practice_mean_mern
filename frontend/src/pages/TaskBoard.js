@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import styled from "@emotion/styled";
 import CreateTaskBoardModel from '../components/CreateTaskBoardModel';
 import CreateTaskModel from '../components/CreateTaskModel';
-import { columnsFromBackend } from "../components/KanbanData";
+// import { columnsFromBackend } from "../components/KanbanData";
 import TaskCard from "../components/TaskCard";
 import { API_PATH, ApiBaseUrl } from '../Services/Const';
 import { PostApi } from '../Services/ApiService';
@@ -52,6 +52,7 @@ export default function TaskBoard(props) {
     const [showModal1, setShowModal1] = useState(false);
     const [taskBoardId, settaskBoardId] = useState("");
     const [taskBoardName, settaskBoardName] = useState("");
+    const [columns, setColumns] = useState({});
 
     const handleShow = () => setShowModal(true);
     const handleClose = () => setShowModal(false);
@@ -60,20 +61,47 @@ export default function TaskBoard(props) {
         settaskBoardName(taskboardnames)
         setShowModal1(true)
     };
-    const handleClose1 = () => setShowModal1(false);
+    const handleClose1 = () =>  setShowModal1(false);
 
 
     const getTaskBoard = async () => {
         let tskbord = await PostApi(API_PATH.get_task_board);
         if (tskbord.status === 200) {
+            if (tskbord.data.data.length > 0) {
+                let tsCol = {}, temptsRow = []
+                let tsk = await PostApi(API_PATH.get_task);
+                if (tsk.status === 200) {
+                    if (tsk.data.data.length > 0) temptsRow = tsk.data.data;
+                }
+                tskbord.data.data.map(e => {
+                    if (!tsCol[e._id]) {
+                        tsCol[e._id] = {title: e.name, items: []}
+                    }
+                })
+                temptsRow.map((k, i)=> { 
+                    if (tsCol[k.task_board_id]) {
+                        tsCol[k.task_board_id].items.push({id: k._id, Task: k.name, Due_Date: k.createdAt})
+                    }
+                })
+                setColumns(tsCol)
+            }
             toast.success(tskbord.data.message);
         }
     }
-    const getTask = async () => {
-        let tskbord = await PostApi(API_PATH.get_task_board);
-        if (tskbord.status === 200) {
-            toast.success(tskbord.data.message);
-        }
+    
+    const getNewTask = (data) => {
+        let tempColumns = columns;
+        tempColumns[taskBoardId].items.push(data)
+        setColumns(tempColumns)
+    }
+    
+    
+    const getNewTaskBoard = (data) => {
+        console.log(data);
+        let tempColumns = columns;
+
+        tempColumns[data._id] = {title: data.name, items: []}
+        setColumns(tempColumns)
     }
     
 
@@ -86,30 +114,9 @@ export default function TaskBoard(props) {
     }
 
     useEffect(() => {
-        // getTaskBoard();
-        // getTask();
+        getTaskBoard();
         getProfile();
-        
-
-    })
-
-    const columns1 = {
-        1: {
-            title: 'In Progress',
-            items: [
-                { id: '2', Task: 'In Progress 2', Due_Date: '26-May-2020' },
-                { id: '1', Task: 'In Progress 1', Due_Date: '26-May-2020' }
-            ]
-        },
-        2: {
-            title: 'Pending',
-            items: [
-                { id: '2', Task: 'Pending 2', Due_Date: '26-May-2020' },
-                { id: '1', Task: 'Pending 1', Due_Date: '26-May-2020' }
-            ]
-        },
-
-    }
+    }, [props])
 
     const Logout = () => {
         localStorage.removeItem("token")
@@ -117,11 +124,22 @@ export default function TaskBoard(props) {
         toast.success("Logout");
     }
 
-    const [columns, setColumns] = useState(columnsFromBackend);
+    const updateTask = async(new_task_board_id, task_id) => {
+        console.log(new_task_board_id, task_id);
+        let data = {new_task_board_id, task_id}
+        let uptsk = await PostApi(API_PATH.update_task, data);
+        if (uptsk.status === 200) {
+            toast.success(uptsk.data.message);
+        }
+    } 
 
     const onDragEnd = (result, columns, setColumns) => {
-        console.log(result, columns, setColumns, "-----");
         if (!result.destination) return;
+        
+        if (result.destination.droppableId != result.source.droppableId) {
+            updateTask(result.destination.droppableId, result.draggableId);
+        }
+
         const { source, destination } = result;
         if (source.droppableId !== destination.droppableId) {
             const sourceColumn = columns[source.droppableId];
@@ -198,28 +216,30 @@ export default function TaskBoard(props) {
                     </div>
                 </div>
             </div>
-            {Object.entries(columns).length > 0 &&
 
+            {Object.entries(columns).length > 0 &&
+                
                 <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)} >
                     <Container>
                         <TaskColumnStyles>
-                            {console.log(columns, "------columns")}
+                            
                             {Object.entries(columns).map(([columnId, column], index) => {
-                                console.log([columnId, column], index)
                                 return (
-                                    <Droppable key={index} droppableId={columnId}>
+                                    <Droppable key={columnId} droppableId={columnId}>
                                         {(provided, snapshot) => (
                                             <TaskList
                                                 ref={provided.innerRef}
                                                 {...provided.droppableProps}
                                             >
                                                 <Title>{column.title}</Title>
-                                                <button type="button" class="btn btn-success" onClick={() => handleShow1('taskboardId', 'taskboardname')}>
+                                                <button type="button" class="btn btn-success" onClick={() => handleShow1(columnId, column.title)}>
                                                     Add Task
                                                 </button>
-                                                {column.items.map((item, index) => (
-                                                    <TaskCard key={index} item={item} index={index} />
-                                                ))}
+                                                {column.items.length > 0 && column.items.map((item, index1) => {
+                                                    return (
+                                                        <TaskCard key={index + '-'+ index1} item={item} index={index1} />
+                                                    )
+                                                })}
                                                 {provided.placeholder}
                                             </TaskList>
                                         )}
@@ -230,8 +250,8 @@ export default function TaskBoard(props) {
                     </Container>
                 </DragDropContext>
             }
-            <CreateTaskBoardModel showModal={showModal} handleClose={handleClose} />
-            <CreateTaskModel showModal={showModal1} handleClose={handleClose1} taskBoardName={taskBoardName} taskBoardId={taskBoardId} />
+            <CreateTaskBoardModel showModal={showModal} handleClose={handleClose} getNewTaskBoard={getNewTaskBoard} />
+            <CreateTaskModel showModal={showModal1} handleClose={handleClose1} getNewTask={getNewTask} taskBoardName={taskBoardName} taskBoardId={taskBoardId} />
         </>
 
     )

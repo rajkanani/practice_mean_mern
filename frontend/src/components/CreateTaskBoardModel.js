@@ -7,7 +7,7 @@ import { Modal} from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
 
 
-const CreateTaskBoardModel = ({ showModal, handleClose }) => {
+const CreateTaskBoardModel = ({ showModal, handleClose, getNewTaskBoard }) => {
     const [loading, setLoading] = useState(false);
 
 
@@ -23,6 +23,7 @@ const CreateTaskBoardModel = ({ showModal, handleClose }) => {
         }
         const users = await PostApi(API_PATH.create_task_board, data);
         if (users.status === 200) {
+            getNewTaskBoard(users.data.data)
             toast.success(users.data.message);
         }
         await delay(500);

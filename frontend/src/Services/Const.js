@@ -17,6 +17,7 @@ export const API_PATH = {
     get_task: ApiBaseUrl + 'api/v1/task/get-task',
     create_task_board: ApiBaseUrl + 'api/v1/task/create-task-board',
     create_task: ApiBaseUrl + 'api/v1/task/create-task',
+    update_task: ApiBaseUrl + 'api/v1/task/update-task',
 
 }
 
